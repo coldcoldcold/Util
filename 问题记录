@@ -1,0 +1,833 @@
+/* 
+* @Author: wxp
+* @Date:   2016-03-23 09:59:04
+* @Last Modified by:   wxp
+* @Last Modified time: 2016-03-23 15:47:24
+*/
+-------------------------------------------------------------------------------------------------
+canvas默认是透明的。但是前提条件是position = absolute。否则会去继承body元素的背景色，除非程序去设置，但是如果通     过js强行将canvas的背景色设置成透明度为0的颜色，不会起效果，canvas依然继承body的背景色。
+-------------------------------------------------------------------------------------------------
+去除android浏览器下a/input等元素获得焦点时高亮边框的解决方案 : 
+a:focus,input:focus {
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-user-modify:read-write-plaintext-only;
+}
+-------------------------------------------------------------------------------------------------
+str为要去除空格的字符串:
+去除所有空格:   
+str   =   str.replace(/\s+/g,"");       
+去除两头空格:   
+str   =   str.replace(/^\s+|\s+$/g,"");
+去除左空格：
+str=str.replace( /^\s*/, '');
+去除右空格：
+str=str.replace(/(\s*$)/g, "");
+-------------------------------------------------------------------------------------------------
+默认的placeholder字体颜色是呈浅灰色，如果想改变这个默认颜色，解决方案如下：
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #f00;  
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #f00;
+}
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #f00;
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #f00;
+}
+-------------------------------------------------------------------------------------------------
+定义html { font-size:62.5% } 那么1rem就等于10px
+-------------------------------------------------------------------------------------------------
+-webkit-text-size-adjust:none;解决Chrome下字号不能小于12px的问题
+-------------------------------------------------------------------------------------------------
+H5页面窗口自动调整到设备宽度，并禁止用户缩放页面?
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+忽略将页面中的数字识别为电话号码
+<meta name="format-detection" content="telephone=no" />
+忽略Android平台中对邮箱地址的识别
+<meta name="format-detection" content="email=no" />
+当网站添加到主屏幕快速启动方式，可隐藏地址栏，仅针对ios的safari
+<meta name="apple-mobile-web-app-capable" content="yes" />
+-------------------------------------------------------------------------------------------------
+ios系统中元素被触摸时产生的半透明灰色遮罩怎么去掉?
+ios用户点击一个链接，会出现一个半透明灰色遮罩, 如果想要禁用，可设置-webkit-tap-highlight-color的alpha值为0，也就是属性值的最后一位设置为0就可以去除半透明灰色遮罩
+a,button,input,textarea{-webkit-tap-highlight-color: rgba(0,0,0,0;)}
+-------------------------------------------------------------------------------------------------
+部分android系统中元素被点击时产生的边框怎么去掉?
+android用户点击一个链接，会出现一个边框或者半透明灰色遮罩, 不同生产商定义出来额效果不一样，可设置-webkit-tap-highlight-color的alpha值为0去除部分机器自带的效果
+a,button,input,textarea{
+-webkit-tap-highlight-color: rgba(0,0,0,0;)
+-webkit-user-modify:read-write-plaintext-only; 
+}
+-webkit-user-modify有个副作用，就是输入法不再能够输入多个字符
+另外，有些机型去除不了，如小米2
+对于按钮类还有个办法，不使用a或者input标签，直接用div标签(红米不行)
+-------------------------------------------------------------------------------------------------
+winphone系统a、input标签被点击时产生的半透明灰色背景怎么去掉?
+<meta name="msapplication-tap-highlight" content="no">
+-------------------------------------------------------------------------------------------------
+webkit表单元素的默认外观怎么重置
+.css{-webkit-appearance:none;}
+webkit表单输入框placeholder的文字能换行么?
+ios可以，android不行~
+在textarea标签下都可以换行~
+-------------------------------------------------------------------------------------------------
+打电话发短信写邮件怎么实现
+打电话
+<a href="tel:0755-10086">打电话给:0755-10086</a>
+发短信，winphone系统无效
+<a href="sms:10086">发短信给: 10086</a>
+写邮件，可参考《移动web页面给用户发送邮件的方法》
+<a href="mailto:peun@foxmail.com">peun@foxmail.com</a>
+-------------------------------------------------------------------------------------------------
+屏幕旋转的事件和样式
+事件
+window.orientation，取值：正负90表示横屏模式、0和180表现为竖屏模式；
+
+
+window.onorientationchange = function(){
+    switch(window.orientation){
+        case -90:
+        case 90:
+        alert("横屏:" + window.orientation);
+        case 0:
+        case 180:
+        alert("竖屏:" + window.orientation);
+        break;
+    }
+}  
+
+样式
+
+//竖屏时使用的样式
+@media all and (orientation:portrait) {
+.css{}
+}
+
+//横屏时使用的样式
+@media all and (orientation:landscape) {
+.css{}
+}
+------------------------------------------------------------------------------------------------
+audio元素和video元素在ios和andriod中无法自动播放
+应对方案：触屏即播
+
+$('html').one('touchstart',function(){
+    audio.play()
+})
+------------------------------------------------------------------------------------------------
+手机拍照和上传图片
+<input type="file">的accept 属性
+
+<!-- 选择照片 -->
+<input type=file accept="image/*">
+<!-- 选择视频 -->
+<input type=file accept="video/*">
+使用总结：
+
+ios 有拍照、录像、选取本地图片功能
+部分android只有选取本地图片功能
+winphone不支持
+input控件默认外观丑陋
+------------------------------------------------------------------------------------------------
+微信浏览器用户调整字体大小后页面矬了，怎么阻止用户调整
+原因
+
+android侧是复写了layoutinflater 对textview做了统一处理
+ios侧是修改了body.style.webkitTextSizeAdjust值
+解决方案：
+
+android使用以下代码，该接口只在微信浏览器下有效(感谢jationhuang同学提供)
+
+/**
+ * 页面加入这段代码可使Android机器页面不再受到用户字体缩放强制改变大小
+ * 但是会有一个1秒左右的延迟，期间可以考虑通过loading展示
+ * 仅供参考
+ */
+(function(){
+    if (typeof(WeixinJSBridge) == "undefined") {
+        document.addEventListener("WeixinJSBridgeReady", function (e) {
+            setTimeout(function(){
+                WeixinJSBridge.invoke('setFontSizeCallback',{"fontSize":0}, function(res) {
+                    alert(JSON.stringify(res));
+                });
+            },0);
+        });
+    } else {
+        setTimeout(function(){
+            WeixinJSBridge.invoke('setFontSizeCallback',{"fontSize":0}, function(res) {
+                alert(JSON.stringify(res));
+            });
+        },0);
+    }
+})();
+
+ios使用-webkit-text-size-adjust禁止调整字体大小
+body{-webkit-text-size-adjust: 100%!important;}
+最好的解决方案：
+
+整个页面用rem或者百分比布局
+------------------------------------------------------------------------------------------------
+消除transition闪屏
+网络都是这么写的，但我并没有测试出来
+
+.css{
+/*设置内嵌的元素在 3D 空间如何呈现：保留 3D*/
+-webkit-transform-style: preserve-3d;
+/*（设置进行转换的元素的背面在面对用户时是否可见：隐藏）*/
+-webkit-backface-visibility: hidden;
+}
+------------------------------------------------------------------------------------------------
+取消input在ios下，输入的时候英文首字母的默认大写
+<input autocapitalize="off" autocorrect="off" />
+android 上去掉语音输入按钮
+input::-webkit-input-speech-button {display: none}
+------------------------------------------------------------------------------------------------
+android 2.3 bug
+@-webkit-keyframes 需要以0%开始100%结束，0%的百分号不能去掉
+after和before伪类无法使用动画animation
+border-radius不支持%单位
+translate百分比的写法和scale在一起会导致失效，例如-webkit-transform: translate(-50%,-50%) scale(-0.5, 1)
+android 4.x bug
+三星 Galaxy S4中自带浏览器不支持border-radius缩写
+同时设置border-radius和背景色的时候，背景色会溢出到圆角以外部分
+部分手机(如三星)，a链接支持鼠标:visited事件，也就是说链接访问后文字变为紫色
+android无法同时播放多音频audio
+------------------------------------------------------------------------------------------------
+设计高性能CSS3动画的几个要素
+尽可能地使用合成属性transform和opacity来设计CSS3动画，不使用position的left和top来定位
+利用translate3D开启GPU加速
+------------------------------------------------------------------------------------------------
+fixed bug
+ios下fixed元素容易定位出错，软键盘弹出时，影响fixed元素定位
+android下fixed表现要比iOS更好，软键盘弹出时，不会影响fixed元素定位
+ios4下不支持position:fixed
+解决方案
+
+可用isroll.js，暂无完美方案
+-------------------------------------------------------------------------------------------------
+播放视频不全屏
+<!--
+1.目前只有ios7+、winphone8+支持自动播放
+2.支持Airplay的设备（如：音箱、Apple TV)播放
+x-webkit-airplay="true" 
+3.播放视频不全屏，ios7+、winphone8+支持，部分android4+支持（含华为、小米、魅族）
+webkit-playsinline="true" 
+-->
+<video x-webkit-airplay="true" webkit-playsinline="true" preload="auto" autoplay src="http://"></video>
+-------------------------------------------------------------------------------------------------
+flex布局
+flex布局目前可使用在移动中，并非所有的语法都全兼容，但以下写法笔者实践过，效果良好~
+
+/* ============================================================
+   flex：定义布局为盒模型
+   flex-v：盒模型垂直布局
+   flex-1：子元素占据剩余的空间
+   flex-align-center：子元素垂直居中
+   flex-pack-center：子元素水平居中
+   flex-pack-justify：子元素两端对齐
+   兼容性：ios 4+、android 2.3+、winphone8+
+   ============================================================ */
+.flex{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}
+.flex-v{-webkit-box-orient:vertical;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;}
+.flex-1{-webkit-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;}
+.flex-align-center{-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;}
+.flex-pack-center{-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;}
+.flex-pack-justify{-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;}
+/*
+===============================
+ */
+示例：两端对齐
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta content="email=no" name="format-detection">
+<style type="text/css">
+/* ============================================================
+   flex：定义布局为盒模型
+   flex-v：盒模型垂直布局
+   flex-1：子元素占据剩余的空间
+   flex-align-center：子元素垂直居中
+   flex-pack-center：子元素水平居中
+   flex-pack-justify：子元素两端对齐
+   兼容性：ios 4+、android 2.3+、winphone8+
+   ============================================================ */
+.flex{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}
+.flex-v{-webkit-box-orient:vertical;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;}
+.flex-1{-webkit-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;}
+.flex-align-center{-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;}
+.flex-pack-center{-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;}
+.flex-pack-justify{-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;}
+</style>
+</head>
+<body>
+
+<div class="flex flex-pack-justify">
+    <div>模块一</div>
+    <div>模块二</div>
+    <div>模块三</div>
+    <div>模块四</div>
+</div>
+
+</body>
+</html>
+使用注意：
+
+flex下的子元素必须为块级元素，非块级元素在android2.3机器下flex失效
+flex下的子元素宽度和高度不能超过父元素，否则会导致子元素定位错误，例如水平垂直居中
+--------------------------------------------------------------------------------------------
+阻止浏览器默认事件并恢复，在移动端：
+var stopPrevent = function(e){
+  e.preventDefault();  //阻止浏览器默认事件
+  e.stopPropagation();  //阻止浏览器事件冒泡
+}
+document.querySelector('body').addEventListener('touchmove',stopPrevent,false); //通过添加事件监听阻止在需要的事件下阻止浏览器默认事件
+document.querySelector('body').removeEventListener('touchmove',stopPrevent,false); //同样可通过移除事件监听解除阻止。
+这里需要注意，eventHandle必须不能是匿名函数，否则无效（可以阻止，无法解除阻止）
+另外这种方式目前只在移动端生效，浏览器端并不生效。
+--------------------------------------------------------------------------------------------
+红米目前发现不支持或者支持不完善的属性包括：
+placeholder background-size audio标签（各种机型支持或多或少都有问题，表现最好的是高版本的android系统）
+另外红米默认点击高亮，出现红色方框，这种默认点击高亮可以通过w3c -webkit-tap-highlight-color: rgba(0,0,0,0) 属性来移除，但是红米不行（具体是不支持这个属性还是别的问题不清楚）。
+所以想要去除红米上的这个默认高亮，目前还没有什么好的办法，有待发现：：
+--------------------------------------------------------------------------------------------
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+--------------------------------------------------------------------------------------------
+移动端html5页面长按实现高亮全选文本内容的兼容解决方案：：：：：：
+摘自：http://blog.csdn.net/freshlover/article/details/40432247  （该方案有待测试）
+
+需求简介：
+  给html5的WebAPP在页面上实现一个复制功能：用户点击长按文本会全选文字并弹出系统“复制”菜单，用户可以点击“复制”进行复制操作，然后粘贴到AppStore搜索对应的应用：
+思路：
+  1）虽然使用带有href属性的a标签在uc浏览器和百度浏览器上长按文本会出现“自由复制”/“选择文本”菜单，选择该菜单后会出现“全选/复制”的菜单，但是在一些安卓手机的系统浏览器和iPhone中却被视为纯链接，只弹出“复制链接”，没有“复制文本”菜单。况且即使只考虑少部分浏览器可行，这样也给用户操作多了一步，增加了复杂度。所以该方案不可取：
+  2）借助selection和range的方法需要考虑到不同浏览器的兼容性，代码如下：
+    function selectText(element) {  
+      var doc = document,  
+          text = doc.getElementById(element),  
+          range,  
+          selection;  
+      
+      if (doc.body.createTextRange) {  
+          range = document.body.createTextRange();  
+          range.moveToElementText(text);  
+          range.select();  
+      } else if (window.getSelection) {  
+          selection = window.getSelection();          
+          range = document.createRange();  
+          range.selectNodeContents(text);  
+          selection.removeAllRanges();  
+          selection.addRange(range);  
+          /*if(selection.setBaseAndExtent){ 
+              selection.setBaseAndExtent(text, 0, text, 1); 
+          }*/  
+      }else{  
+          alert("none");  
+      }  
+    }  
+    遗憾的是在iphone Safari上依然无法通过点击或长按高亮选中所有文本（既然也支持window.getSelection，为何在Safari浏览器addRange操作后文本不能默认选中，原因目前不明：）。因此，该方式存在缺陷。主动选中文本区域的方法后面后附上：
+  3）iPhone用户可能知道，长按某一文本选区内文字周围的空白区域，Safari会自动将该选区内的文本高亮全选（目标文本需要放在独立的div块级容器内）。根据这一特性，用CSS margin修饰一下，利用这个特点，正好可以解决上述第二种方法在ios设备的不兼容。经过测试，无论安卓和ios平台，一般手机自带的系统浏览器都是可以兼容的。至于uc浏览器、百度浏览器等其他厂家的移动端产品，由于有不同的机制，只能使用这些浏览器菜单提供的“自由复制”功能：
+
+  所以，我综合了第二种和第三种方式，使用jquery mobile中的taphold事件来模拟longtap操作激发手机系统的复制菜单，这样基本上可以做到在所有移动设备浏览器上都能实现长按文本区域来高亮选中所有文本内容。再提一句，taphold的兼容bug这里就不详细附解决方法了，如果你的项目要求精益求精，你可以自行搜索解决方案：
+
+  下面列出我的解决方案。具体代码如下：
+
+  HTML代码：
+    <div class=" para requirement">  
+      <div class="tips tips-t">  
+          1、必须首次下载才生效<br/>  
+          2、不能从排行榜下载哦  
+      </div>  
+      <div class="cparea">  
+          <div class="kwd" id="kwd"><span>三国艳义手机优化大师</span></div>                   
+      </div>  
+      <div class="cparea">  
+          <span class="kdes"><b>★</b>长按虚线框,拷贝关键词</span>  
+      </div>  
+      <a href="https://itunes.apple.com/cn/" data-role="button" class="downlink">去AppStore搜索下载</a>  
+  </div>
+  JavaScript代码：
+    <script type="text/javascript">  
+  
+    $("#kwd").bind("taphold", function(){ //不支持iPhone/iTouch/iPad Safari  
+        var doc = document,   
+            text = doc.getElementById("kwd"),  
+            range,   
+            selection;  
+        if (doc.body.createTextRange) {  
+            range = document.body.createTextRange();  
+            range.moveToElementText(text);  
+            range.select();  
+        } else if (window.getSelection) {  
+            selection = window.getSelection();          
+            range = document.createRange();  
+            range.selectNodeContents(text);  
+            selection.removeAllRanges();  
+            selection.addRange(range);   
+        }else{  
+            alert("浏览器不支持长按复制功能");  
+        }         
+    });  
+      
+    </script>
+    关键的CSS代码：
+      .cparea{  
+          text-align: center;  
+          font-family: Microsoft Yahei;  
+          margin: -2em 0 0;  
+      }  
+      .kwd{  
+          display: inline-block;  
+          color: #272727;  
+          background-color: #fff;  
+          font-size: 1.1875em;  
+          font-size: 1.1875em;  
+          padding: .75em 1em;  
+          border: 1px dashed #e60012;  
+          -webkit-user-select:element;   
+          margin: 2em;  
+      }  
+      .kwd span{  
+          display: block;   
+          border: 1px solid #fff;  
+      }  
+      .kdes{  
+          display: inline-block;  
+          color: #212121;  
+          font-size: .875em;  
+          padding-top: 0;  
+      }  
+      .kdes b{  
+          color: #ed5353;  
+          font-size: 1.25em;  
+          padding-right: .1em;  
+      }  
+      说明：这里的margin：2em正是为了实现Safari浏览器上的长按全选功能，为了尊重还原设计稿效果，父容器.cparea又使用了负边距来抵消这个2em的外边距。最终，不仅视觉上和设计图保持了一致，也实现了长按全选激发系统菜单：
+
+      最后再补充一下支持Safari下的完整方法：
+      $("#kwd").bind("taphold", function(){  
+          var doc = document,   
+              text = doc.getElementById("kwd"),  
+              range,
+              selection;  
+          if (doc.body.createTextRange) { //IE  
+              range = document.body.createTextRange();  
+              range.moveToElementText(text);  
+              range.select();  
+        
+          } else if (window.getSelection) {   //FF CH SF  
+              selection = window.getSelection();          
+              range = document.createRange();  
+              range.selectNodeContents(text);  
+              selection.removeAllRanges();  
+              selection.addRange(range);  
+        
+              //测试  
+              console.log(text.textContent);  
+              text.innerText && console.log(text.innerText);  //FireFox不支持innerText  
+              console.log(text.textContent.length);  
+              text.innerText && console.log(text.innerText.length);   //在Chrome下长度比IE/FF下多1  
+              console.log(text.firstChild.textContent.length);  
+              text.innerText && console.log(text.firstChild.innerText.length);  
+              console.log(text.firstChild.innerHTML.length);  
+        
+              //注意IE9-不支持textContent  
+              makeSelection(0, text.firstChild.textContent.length, 0, text.firstChild);  
+              /* 
+              if(selection.setBaseAndExtent){ 
+                  selection.selectAllChildren(text); 
+                  selection.setBaseAndExtent(text, 0, text, 4); 
+              } 
+              */  
+          }else{  
+              alert("浏览器不支持长按复制功能");  
+          }  
+        
+      });  
+      function makeSelection(start, end, child, parent) {  
+          var range = document.createRange();  
+          //console.log(parent.childNodes[child]);  
+          range.setStart(parent.childNodes[child], start);  
+          range.setEnd(parent.childNodes[child], end);  
+        
+          var sel = window.getSelection();  
+          sel.removeAllRanges();  
+          sel.addRange(range);   
+      } 
+--------------------------------------------------------------------------------
+base64编码：
+<html>
+<HTML>
+<HEAD>
+<TITLE>Base64</TITLE>
+<script type='text/javascript'>
+
+var BASE64_ENCODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var BASE64_DECODE_CHARS = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63, 52,
+                53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33,
+                34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1];
+function encodeBase64(str) {
+        var c1, c2, c3, i = 0, len = str.length, out=[];
+        while (i < len) {
+                c1 = str.charCodeAt(i++) & 0xff;
+                if (i == len) {
+                        out.push(BASE64_ENCODE_CHARS.charAt(c1 >> 2));
+                        out.push(BASE64_ENCODE_CHARS.charAt((c1 & 0x3) << 4));
+                        out.push('==');
+                        break;
+                }
+                c2 = str.charCodeAt(i++);
+                if (i == len) {
+                        out.push(BASE64_ENCODE_CHARS.charAt(c1 >> 2));
+                        out.push(BASE64_ENCODE_CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4)));
+                        out.push(BASE64_ENCODE_CHARS.charAt((c2 & 0xF) << 2));
+                        out.push('=');
+                        break;
+                }
+                c3 = str.charCodeAt(i++);
+                out.push(BASE64_ENCODE_CHARS.charAt(c1 >> 2));
+                out.push(BASE64_ENCODE_CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4)));
+                out.push(BASE64_ENCODE_CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6)));
+                out.push(BASE64_ENCODE_CHARS.charAt(c3 & 0x3F));
+        }
+        return out.join('');
+}
+function decodeBase64(str) {
+        var c1, c2, c3, c4, i = 0, len = str.length, out=[];
+        while (i < len) {
+                /* c1 */
+                do {
+                        c1 = BASE64_DECODE_CHARS[str.charCodeAt(i++) & 0xff];
+                } while (i < len && c1 == -1);
+                if (c1 == -1)
+                        break;
+                /* c2 */
+                do {
+                        c2 = BASE64_DECODE_CHARS[str.charCodeAt(i++) & 0xff];
+                } while (i < len && c2 == -1);
+                if (c2 == -1)
+                        break;
+                out.push(String.fromCharCode((c1 << 2) | ((c2 & 0x30) >> 4)));
+                /* c3 */
+                do {
+                        c3 = str.charCodeAt(i++) & 0xff;
+                        if (c3 == 61)
+                                return out.join('');
+                        c3 = BASE64_DECODE_CHARS[c3];
+                } while (i < len && c3 == -1);
+                if (c3 == -1)
+                        break;
+                out.push(String.fromCharCode(((c2 & 0XF) << 4) | ((c3 & 0x3C) >> 2)));
+                /* c4 */
+                do {
+                        c4 = str.charCodeAt(i++) & 0xff;
+                        if (c4 == 61)
+                                return out.join('');
+                        c4 = BASE64_DECODE_CHARS[c4];
+                } while (i < len && c4 == -1);
+                if (c4 == -1)
+                        break;
+                out.push(String.fromCharCode(((c3 & 0x03) << 6) | c4));
+        }
+        return out.join('');
+}
+function utf16to8(str) {
+        var out, i, len, c;
+        out = "";
+        len = str.length;
+        for (i = 0; i < len; i++) {
+                c = str.charCodeAt(i);
+                if ((c >= 0x0001) && (c <= 0x007F)) {
+                        out += str.charAt(i);
+                } else if (c > 0x07FF) {
+                        out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                        out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                        out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                } else {
+                        out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                        out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+        }
+        return out;
+}
+function utf8to16(str) {
+        var out, i, len, c;
+        var char2, char3;
+        out = "";
+        len = str.length;
+        i = 0;
+        while (i < len) {
+                c = str.charCodeAt(i++);
+                switch (c >> 4) {
+                        case 0 :
+                        case 1 :
+                        case 2 :
+                        case 3 :
+                        case 4 :
+                        case 5 :
+                        case 6 :
+                        case 7 :
+                                // 0xxxxxxx
+                                out += str.charAt(i - 1);
+                                break;
+                        case 12 :
+                        case 13 :
+                                // 110x xxxx　 10xx xxxx
+                                char2 = str.charCodeAt(i++);
+                                out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                                break;
+                        case 14 :
+                                // 1110 xxxx　10xx xxxx　10xx xxxx
+                                char2 = str.charCodeAt(i++);
+                                char3 = str.charCodeAt(i++);
+                                out += String.fromCharCode(((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
+                                break;
+                }
+        }
+        return out;
+}
+
+function doIt() {
+        var sourceValue = document.getElementById('source').value;
+        document.getElementById('output').value = encodeBase64(utf16to8(sourceValue));
+        document.getElementById('decode').value = utf8to16(decodeBase64(sourceValue));
+}
+
+</script>
+<body>
+Source :<br>
+<textarea></textarea><br><br>
+base64 Encode :<br>
+<textarea></textarea><br><br>
+base64 Eecode :<br>
+<textarea></textarea><br><br>
+<input type=button value="Transcoding">
+</body>
+</html>
+--------------------------------------------------------------------------------
+h5 file API：
+  if(window.FileReader){
+    var fileReader = new FileReader();
+    ...
+  }else {
+    alert('not supported.');
+  }
+
+  FileReader对象包含四个方法：
+  方法名                              参数              描述
+  abort                               none              中断文件读取
+  readAsBinaryString                  file              将文件读取为二进制码
+  readAsDataUrl                       file              将文件读取为DataUrl
+  readAsText                          file,[encoding]   文件读取为文本  
+
+  FileReaderd对象的事件模型：
+  事件                  描述
+  onabort               中断时触发
+  onerror               出错时触发
+  onload                文件读取成功时触发
+  onloadend             文件读取完成时触发，无论成功还是失败
+  onloadstart           文件读取开始时触发
+  onprogress            文件读取中
+
+  文件读取完成之后，不会返回读取结果，而是将返回结果填充在result属性中。（成功时就是读取结果，失败时result=null）。所以，一般这样抓取result：
+  首先通过
+    <input type="file" accept="image/*" capture id="myphoto">
+    <input type="file" name="video" accept="video/*" capture id="myvideo">
+    //以上input方式可以调用移动端  拍照   录像功能。 然后我们通过file API来操作，获取用户拍照  录像 的文件，  通过base64编码的url  既可以在前台来添加预览，也可以提交后台。
+    （各种MIME类型参见<input>）
+    让用户手动选择文件。
+    当然，也可以通过File对象,
+      var file = new File(data,{type:'text/plain'});    //data: array对象
+    推荐通过input获取file，然后：
+    var videoInput = document.querySelector('#myvideo'),
+    videoInput.onchange = function(){
+        var file = videoInput.files[0];//这里获取file对象
+        var reader = new FileReader();//新建FileReader对象，获取操作文件API
+        reader.onload = function (e) {//先定义FileReader对象onload事件回调函数
+            var dataURL = e.target.result,  //load成功 读取填充在result中的地址
+                c = document.querySelector('#videocanvas'),
+                ctx = c.getContext('2d'),
+                fps = 1000/30,
+                video = document.createElement('video'); //这里是video文件，所以新建video标签来承载
+                video.setAttribute('autoplay','autoplay');
+                video.setAttribute('controls','controls');
+            video.onload = function() {
+                setInterval(function(){
+                    ctx.drawImage(video, 0, 0);
+                }, fps);
+            };
+            video.src = dataURL; //为video标签添加src属性
+            document.body.appendChild(video);
+          };
+        reader.readAsDataURL(file);//读取文件为DataUrl  {这里是个base64编码的地址}
+    }
+--------------------------------------------------------------------------------
+document.querySelector('selector').addEventListener();//以addEventListener添加的事件句柄 如果添加在同一个dom对象上，会叠加事件句柄，并在触发事件时，以绑定的先后顺序执行
+window.onclick = function(){};//以onclick等方式添加的事件句柄，如果添加在同一个dom对象上，会替换前一个事件句柄，不叠加，而是覆盖。
+----------------------------------------------------------------------------------------------------
+判断手机浏览器类型：
+var ua = navigator.userAgent,
+    isQQ = /(?:MQQBrowser|QQ)/.test(ua), 
+    isWindowsPhone = /(?:Windows Phone)/.test(ua),
+    isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone, 
+    isAndroid = /(?:Android)/.test(ua), 
+    isFireFox = /(?:Firefox)/.test(ua), 
+    isChrome = /(?:Chrome|CriOS)/.test(ua),
+    isIpad = /(?:iPad|PlayBook)/.test(ua), 
+    isTablet = /(?:iPad|PlayBook)/.test(ua)||(isFireFox && /(?:Tablet)/.test(ua)),
+    isSafari = /(?:Safari)/.test(ua),
+    isIPhone = /(?:iPhone)/.test(ua) && !isTablet,
+    isOpera= /(?:Opera Mini)/.test(ua),
+    isUC = /(?:UCWEB|UCBrowser)/.test(ua),
+    isPc = !isIPhone && !isAndroid && !isSymbian;
+-----------------------------------------------------------------------------------------------------
+HTML特殊字符编码：
+&lt;  < 小于号或显示标记
+&gt;  > 大于号或显示标记
+&amp; & 可用于显示其它特殊字符
+&quot;  “ 引号
+&reg; ® 已注册
+&copy;  © 版权
+&trade; ™ 商标
+&ensp;    半个空白位
+&emsp;    一个空白位
+&nbsp;    不断行的空白
+
+´ &acute; © &copy;  > &gt;  µ &micro; ® &reg;
+& &amp; ° &deg; ¡ &iexcl;   &nbsp;  » &raquo;
+¦ &brvbar;  ÷ &divide;  ¿ &iquest;  ¬ &not; § &sect;
+• &bull;  ½ &frac12;  « &laquo; ¶ &para;  ¨ &uml;
+¸ &cedil; ¼ &frac14;  < &lt;  ± &plusmn;  × &times;
+¢ &cent;  ¾ &frac34;  ¯ &macr;  “ &quot;  ™ &trade;
+€ &euro;  £ &pound; ¥ &yen;       
+„ &bdquo; … &hellip;  · &middot;  › &rsaquo;  ª &ordf;
+ˆ &circ;  “ &ldquo; — &mdash; ’ &rsquo; º &ordm;
+† &dagger;  ‹ &lsaquo;  – &ndash; ‚ &sbquo; ” &rdquo;
+‡ &Dagger;  ‘ &lsquo; ‰ &permil;    &shy; ˜ &tilde;
+≈ &asymp; ⁄ &frasl; ← &larr;  ∂ &part;  ♠ &spades;
+∩ &cap; ≥ &ge;  ≤ &le;  ″ &Prime; ∑ &sum;
+♣ &clubs; ↔ &harr;  ◊ &loz; ′ &prime; ↑ &uarr;
+↓ &darr;  ♥ &hearts;  − &minus; ∏ &prod;  ‍ &zwj;
+♦ &diams; ∞ &infin; ≠ &ne;  √ &radic; ‌ &zwnj;
+≡ &equiv; ∫ &int; ‾ &oline; → &rarr;    
+α &alpha; η &eta; μ &mu;  π &pi;  θ &theta;
+β &beta;  γ &gamma; ν &nu;  ψ &psi; υ &upsilon;
+χ &chi; ι &iota;  ω &omega; ρ &rho; ξ &xi;
+δ &delta; κ &kappa; ο &omicron; σ &sigma; ζ &zeta;
+ε &epsilon; λ &lambda;  φ &phi; τ &tau;   
+Α &Alpha; Η &Eta; Μ &Mu;  Π &Pi;  Θ &Theta;
+Β &Beta;  Γ &Gamma; Ν &Nu;  Ψ &Psi; Υ &Upsilon;
+Χ &Chi; Ι &Iota;  Ω &Omega; Ρ &Rho; Ξ &Xi;
+Δ &Delta; Κ &Kappa; Ο &Omicron; Σ &Sigma; Ζ &Zeta;
+Ε &Epsilon; Λ &Lambda;  Φ &Phi; Τ &Tau; ς &sigmaf;
+------------------------------------------------------------------------------------------------------
+nodejs 中：
+  在严格模式下 this无法被读写 强行去读 只能读到undefined：
+  在非严格模式下 this指向global全局对象  而不是指向该function：
+  ------------------------------------------------------------------------------------------------------
+  nodejs搭建服务器：
+  静态文件，通过fs模块读取，通过res返回。
+  动态文件，需要用到模板，（这里使用pug（以前的jade）），使用jade模块的renderFile方法,回调中会返回渲染好的html页面，然后通过res返回，（注意这时要将content-type设置成‘text/html’）。
+  -----以上主要针对html页面：
+  另外渲染pug模板，肯定是需要用到数据的，我们在路由走到渲染模板之前，去打开mongodb（具体使用哪种数据库，可选），从数据库抽取数据用来渲染模板生成页面。同时，pug模板中可以去绑定事件，去响应用户的操作，简单的更改样式的操作撇开不谈。这里说需要保存数据之类的，需要跟后台有交互的操作。pug模板中可以在触发事件时，想后台发送请求，因此，我们需要在router中增加此类请求的处理方法。路由中便可以跟数据库交互，完成数据库的CRUD，同时返回给页面数据，页面代码做出响应。
+  -------------------------------------------------------------------------------------------------------
+  目前我的node服务器最基本的框架，还差跟数据库的交互，目前已经选用mongodb作为后台数据库。所以这里总结下整个服务器搭建的过程，或者说是思路：
+  1.首先需要启动服务器的代码，service.js：
+  2.处理请求，获取各种所需参数，传给路由做处理，app.js：
+  3.核心！！！！：路由控制！！！！：路由控制主要是做请求的分发，对于不同的请求发送给不同的请求处理方法。主要分为两块，一块是静态文件请求，比如简单的html页面，页面中引入的js，css，png等等。静态文件的路由，主要通过nodejs的文件处理系统fs模块来做处理。readFile获取文件，res发送，具体文件类型，可以创建mime对象具体管理，这里需要多出一个mime.js。另一块是动态文件请求，一般来说就是请求动态页面。动态页面中，一般都是使用模板，本次实践使用的pug模板（也就是以前的jade，现在更名了。），通过模板来动态渲染页面。既然是动态渲染，少不了数据库。本次实践选用mongodb数据库为后台提供数据服务。：
+  4.核心！！！数据处理！！！：数据一直都是最核心的东西。对于动态页面，当路由发现，本次请求的页面是动态页面，这时路由需要去请求数据库处理模块来CRUD数据。这里就要多出db-service.js。该模块，处理数据库的链接，CRUD操作，断开等一系列数据库操作。等数据处理完毕，返回处理结果给路由处理方法requestHandle.js。这是路由指定的路由处理方法根据获取到的数据处理方法返回的结果进行处理，将结果返回给页面代码，页面代码完成最后一步操作。：
+  5.整个服务器这样就算完成了最基本的功能了。至于，路由的安全，对于风险请求（比如url注入等等）的处理，需服务器整体理解之后来完善。：
+
+  这里记录下目前所知的不足：
+  1、路由安全控制：（路由控制的完善，至于一些请求参数，将会试着不使用，这样就不会用到queryString模块，而是在有数据需要传到后台的时候，都通过post方法来传递，而不使用get，也减少安全风险。）：
+  2、登陆系统（其实登陆系统做的事情是通过页面事件，获取用户输入的用户名和密码，然后经过路由，到达路由处理方法，由路由处理方法调用数据库操作方法操作数据库，查询user表，对比用户是否存在，返回给页面js结果，页面做出响应处理。）所以如果上面所说的服务器框架搭建完成，增加登陆系统是不成问题的。（当然，牵扯到登陆系统，肯定需要加密处理程序，这是一个难点）：
+  3、页面gzip加速：
+  4、以后不光html是动态模板，css也会启用动态的less来代替，这里肯定就又需要less批量编译方法，待研究。：
+  5、文件上传下载功能，这是个难点：
+  6、sockit.io，后面会测试即时通讯的功能：
+  
+  以上就是目前的成果以及问题，本次实践没有使用express，而是从头到尾全部使用原生nodejs，加原生js，加快对于整个过程的理解。全部完成后将使用express+rect+mysql来做一个正真可用的服务器。目前整个服务器模块的规划，目录结构的规划都是很糟糕的。：
+  -------------------------------------------------------------------------------------------------------
+  weinre的使用：
+    1.安装 weinre npm -g install weinre 
+    2.启动 weinre -httpPort 8081 -boundHost -all- (8081为weinre服务使用的端口，如占用请更换)
+    3.打开页面 http://本机ip:8081 （这是里面会有提示需在页面引入的js）  打开之后点击debug client
+    4.在需要调试的页面中加入上面获得的script标签
+    5.在手机端打开页面  即可调试；
+-----------------------------------------------------------------------------------------------------
+1.$('.test').click(function(){
+  get();
+});
+2.$('.test').click(get);
+
+上面两个方法，今天发现个奇葩的情况，  如果我们在get中获取this，可以发现1中this指向window 而2中this指向$('.test')这个dom；原因不知；  
+----------------------------------------------------------------------------------
+setTimeout();中this指向window
+----------------------------------------------------------------------------------
+ios中  input框  type=date时，如果不设置min-height 点击清除会造成input框高度为1，下次就点击不了了。
+----------------------------------------------------------------------------------
+在border颜色的选择上，乐视XX型号对于rgba的支持不够；
+---------------------------------------------------------------
+canvas中  推荐一次性绘制路径完成之后，一次性完成渲染，提高canvas绘图效率。但是今天遇到个奇怪的问题，（可能是跟我加了渐变色渲染有关系，具体原因不明）。我在一个canvas中绘制了两条折线，但是不管谁先画谁后画都会造成部分遮挡。后来通过画一段线就立即渲染的方式解决了 ，但是这canvas的意志不符。不停的渲染很短的path，很容易造成性能问题，但是又找不到别的合适的解决方法，目前只能这样解决，后面有待研究。
+//发现了问题在于渐变色上面，由于第二段折线下方的折线的遮挡，造成无论哪条线先画都会有遮挡。
+-------------------------------------------------------------------
+如果后台之前返回dom元素，一般会使用CDATA包裹，如
+<![CDATA[<p>A：你好</p><p>B：你好啊</p>]]>
+那么在解析这个xml string的时候，需要将CDATA中的内容解析出来，使用如下方式：
+xmlstring.replace(new RegExp(/\>\<\!\[CDATA\[/g),' mesg="').replace(/\]\]/g,'"')
+上面的方式将CDATA中的内容提取出来并作为mesg属性放在xml节点上。
+----------------------------------------------------------------------
+问题条件： ios系统，浏览器中。
+描述： 在浏览器底部双击时，会出现浏览器上移的情况
+处理方法： //处理ios上浏览器中双击上移的问题。
+    var agent = navigator.userAgent.toLowerCase();        //检测是否是ios
+    var iLastTouch = null;                                //缓存上一次tap的时间
+    if (agent.indexOf('iphone') >= 0 || agent.indexOf('ipad') >= 0)
+    {
+        document.body.addEventListener('touchend', function(event)
+        {
+            var iNow = new Date()
+                .getTime();
+            iLastTouch = iLastTouch || iNow + 1 /** 第一次时将iLastTouch设为当前时间+1 */ ;
+            var delta = iNow - iLastTouch;
+            if (delta < 500 && delta > 0)
+            {
+                event.preventDefault();
+                return false;
+            }
+            iLastTouch = iNow;
+        }, false);
+    }
+-------------------------------------------------------
+ios 7.1.2 以及以下版本  不支持 Number.isNaN 方法：
+-------------------------------------------------------
+360浏览器，ios系统版本10.1，但是 navigator.userAgent = Mozilla/5.0 (iPhone; CPU iPhone OS 8_1_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B466 searchBrowser/1.0；
+----------------------------------------------------------------------------------------
+0.5像素线的处理：
+1.
+span {
+    background-image: -webkit-linear-gradient(bottom,red 50%,transparent 50%);
+    background-image: linear-gradient(bottom,red 50%,transparent 50%);
+    background-size:  100% 1px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+}
+//从底部绘制一个渐变色，颜色为红色，占比为50%，而总宽度已经设置为100%而总高度为一个像素background-size:  100% 1px；这样显示出来就是0.5像素的线条
+2.  -webkit-transform: scale(1,0.5);
+    transform: scale(1,0.5);
+    -webkit-transform-origin: center bottom;
+    transform-origin: center bottom
+----------------------------------------------------------------------------------
+ios 滚动卡顿处理：    2017-9-12
+-webkit-overflow-scrolling: touch;//懒滚动 (auto: 手指离开屏幕，立即停止滚动)
+----------------------------------------------------------------------------------
