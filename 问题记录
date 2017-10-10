@@ -831,3 +831,54 @@ span {
 ios 滚动卡顿处理：    2017-9-12
 -webkit-overflow-scrolling: touch;//懒滚动 (auto: 手指离开屏幕，立即停止滚动)
 ----------------------------------------------------------------------------------
+全角空格html会解析成一个正方形。。。。。。。。。
+----------------------------------------------------------------------------------
+判断是否兼容touch事件
+var touch = (window.Modernizr && Modernizr.touch === true) || (function () {
+	return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
+})();
+判断是否兼容3D变换
+var transforms3d = (window.Modernizr && Modernizr.csstransforms3d === true) || (function () {
+	var div = document.createElement('div').style;
+	return ('webkitPerspective' in div || 'MozPerspective' in div || 'OPerspective' in div || 'MsPerspective' in div || 'perspective' in div);
+})();
+判断是否兼容flex弹性盒子
+var flexbox = (function () {
+	var div = document.createElement('div').style;
+	var styles = ('alignItems webkitAlignItems webkitBoxAlign msFlexAlign mozBoxAlign webkitFlexDirection msFlexDirection mozBoxDirection mozBoxOrient webkitBoxDirection webkitBoxOrient').split(' ');
+	for (var i = 0; i < styles.length; i++) {
+		if (styles[i] in div) return true;
+	}
+})();
+判断是否兼容观察者模式
+var observer= (function () {
+	return ('MutationObserver' in window || 'WebkitMutationObserver' in window);
+})();
+----------------------------------------------------------------------------------
+2017-10-10
+unicode码点：
+如果是基本平面字符转16进制：
+U+597D = 0x597D
+如果是辅助平面字符转16进制，转码公式为：
+H = Math.floor((c-0x10000) / 0x400)+0xD800
+L = (c - 0x10000) % 0x400 + 0xDC00
+##注意这里H，L拿到后需要使用 (H).toString(16)转换进制。
+
+eg：字符𪜀的Unicode码点为 2A700，转换过程如下：
+H = Math.floor((c-0x10000) / 0x400)+0xD800 = 55401;
+L = (c - 0x10000) % 0x400 + 0xDC00 = 57088;
+(H).toString(16) = d869;(L).toString(16) = df00;
+这时再使用正则匹配：
+/^\ud869\udf00$/.test('𪜀')  返回true;
+切记不可直接只用 /^\u2A700$/.test('𪜀') 返回false;
+js只识别utf-16;
+unicode码点和16进制的转换，副主平面字符具有特殊性。
+----------------------------------------------------------------------------------
+记录文件的上传，采用formData方式：
+通过h5文件系统拿到File对象之后，
+var x = new FormData();
+把file对象append进formData,key值采用与后台约定的key值，
+x.append(key,file);
+如果是files列表，采用迭代构建files数组，append；
+最后xml.send(x);
+-----------------------------------------------------------------------------------
