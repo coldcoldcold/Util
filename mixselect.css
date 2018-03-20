@@ -1,0 +1,272 @@
+//该样式和mixselect搭配使用。
+//主要使用background-image中使用-webkit-linear-gradient线性渐变色，实现圆形滚动的效果。
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+}
+
+.mixselectContent {
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    padding: 0;
+}
+
+.mixselectSwiperTank::-webkit-scrollbar {
+    display: none;
+}
+
+.mixselectTitle {
+    position: relative;
+    text-align: center;
+    padding: 0;
+    background-color: #fff;
+    margin-top: 18px;
+    margin-bottom: 17px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.mixselectTitleSpan {
+    display: inline-block;
+    font-family: PingFangSC-Regular;
+    font-size: 17px;
+    color: #323232;
+    height: 24px;
+    line-height: 24px;
+}
+
+.mixselectTitleCancelBtn {
+    position: absolute;
+    top: 0;
+    left: 14px;
+    color: #0894ec;
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #666666;
+}
+
+.mixselectCloseBtn {
+    position: absolute;
+    top: 0;
+    right: 14px;
+    color: #0894ec;
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #666666;
+}
+
+.mixselectSwiperTank {
+    background-color: #fff;
+    height: 150px;
+    overflow: hidden;
+    /* -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .63) 45%, transparent 95%, transparent);
+    -webkit-mask-box-image: linear-gradient(to top, transparent, transparent 5%, white 80%, white 20%, transparent 95%, transparent); */
+    /* -webkit-mask-box-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .63) 45%); */
+    position: relative;
+    margin-bottom: 22px;
+    padding: 0 17px;
+}
+
+.mixselectSwiperItem {
+    height: 30px;
+    line-height: 28px;
+    color: #999999;
+    position: relative;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    font-family: PingFangSC-Regular;
+    font-size: 17px;
+}
+
+.mixselectSwiperItemSelected {
+    color: #141414;
+}
+
+.mixselectTopMask {
+    height: 59px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* transform: translateY(-50%);
+    -webkit-transform: translateY(-50%); */
+    pointer-events: none;
+    /* -prefix  hack老版本渐变色 */
+    background-image: -prefix-linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 50%);
+    background-image: -webkit-linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 100%);
+    background-image: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 100%);
+}
+
+.mixselectBottomMask {
+    height: 59px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    /* transform: translateY(-50%);
+    -webkit-transform: translateY(-50%); */
+    pointer-events: none;
+    background-image: -prefix-linear-gradient(to top, rgba(255, 255, 255, .6) 0%, rgba(255, 255, 255, 0) 100%);
+    background-image: -webkit-linear-gradient(to top, rgba(255, 255, 255, .6) 0%, rgba(255, 255, 255, 0) 100%);
+    background-image: linear-gradient(to top, rgba(255, 255, 255, .6) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.mixselectCeterHighlight {
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    /* transform: translateY(-50%);
+    -webkit-transform: translateY(-50%); */
+    margin-top: -15px;
+    pointer-events: none;
+}
+
+.mixselectCeterHighlight::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: auto;
+    right: auto;
+    height: 200%;
+    width: 100%;
+    border-bottom: 1px solid #e5e5e5;
+    display: block;
+    z-index: 15;
+    -webkit-transform-origin: 50% 0%;
+    transform-origin: 50% 0%;
+    transform: scaleY(.5);
+    -webkit-transform: scaleY(.5);
+}
+
+.mixselectCeterHighlight::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    right: auto;
+    border-bottom: 1px solid #e5e5e5;
+    height: 200%;
+    width: 100%;
+    display: block;
+    z-index: 15;
+    -webkit-transform-origin: 50% 0%;
+    transform-origin: 50% 0%;
+    transform: scaleY(.5);
+    -webkit-transform: scaleY(.5);
+}
+
+.mixselectLevelPer {
+    height: 150px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mixselectSwiperInner {
+    padding: 0;
+    transition-duration: 300ms;
+    -webkit-transition-duration: 300ms;
+    transition-timing-function: ease-out;
+    -webkit-transition-timing-function: ease-out;
+}
+
+.showInfoForSelect {
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+    color: #555555;
+}
+
+.mixselectEndDateBottomDiv {
+    margin-top: -8px;
+    display: box;
+    display: -webkit-box;
+    box-align: center;
+    -webkit-box-align: center;
+    box-pack: start;
+    -webkit-box-pack: start;
+    box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    padding-left: 55px;
+    margin-bottom: 20px;
+}
+
+.mixselectEndDateCheckBox {
+    width: 15px;
+    height: 15px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.mixselectEndDateTipDiv {
+    margin-left: 10px;
+    height: 15px;
+    line-height: 15px;
+}
+
+.mixselectEndDateTipSpan {
+    font-family: PingFangSC-Regular;
+    font-size: 12px;
+    color: #666666;
+    letter-spacing: 0;
+}
+
+.mixselectMask {
+    z-index: 9999;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.6);
+    width: 100%;
+    height: 100%;
+}
+
+.endDateChecked {
+    background-image: url('/sjkh/sjkhVI/img/checked-icon.png');
+}
+
+.endDateNoChecked {
+    background-image: url('/sjkh/sjkhVI/img/no-checked-icon.png');
+}
+
+@-webkit-keyframes showSelect {
+    from {
+        bottom: -230px;
+    }
+    to {
+        bottom: 0px;
+    }
+}
+
+@-webkit-keyframes hideSelect {
+    from {
+        bottom: 0px;
+    }
+    to {
+        bottom: -230px;
+    }
+}
+
+.animateShow {
+    -webkit-animation: showSelect .3s forwards ease-out;
+}
+
+.animateHide {
+    -webkit-animation: hideSelect .3s forwards ease-in;
+}
+
+.showMixSelect {
+    display: block;   
+}
+
+.hideMixSelect {
+    display: none;
+}
